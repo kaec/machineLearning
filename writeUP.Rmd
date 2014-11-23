@@ -1,0 +1,84 @@
+---
+title: "Machine Learning"
+author: "kaec"
+date: "Saturday, November 22, 2014"
+output: html_document
+---
+## Data Loading
+The data used in this machine learning investigation comes from http://groupware.les.inf.puc-rio.br/har . It is a collection of reading's from accelerometers on the belt, forearm, arm, and dumbell. The measurements where taken from 6 participants who performed 10 repititions of dumbell lifts in the correct way and in 4 different wrong ways.
+For convenience the data has already been split into training and test data. Firstly, the training and test data is loaded.
+
+```{r, gettingData, cache= TRUE}
+testDstFile <- "test.csv"
+trainDstFile <- "train.csv"
+
+download.file("http://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv", testDstFile)
+download.file("http://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv", trainDstFile)
+
+testData <- read.csv(testDstFile)
+trainData <- read.csv(trainDstFile)
+
+names(testData)
+str(testData)
+```
+
+According to the available data documentation, the "classe" variable describes how the dumbell exercise was done. "A" denotes the correctly done exercise, "B" to "E" describe the exercise done in some way incorrectly. 
+
+This investigation will try to predict a discrete value output (A - E) which means dealing with a Classification problem.
+
+## Prediction Model
+First of all the seed is set so that the research is reproducible. 
+
+The first 7 columns of the data contain entries related to the participant and time, which are less useful for the predicition, if the prediction should just be done based on the measurments of the accelerometers. 
+Also data contains some factor variables (excluding classe) which have empty data, wrong entries (Div0), or unchanging values. Therefore these columns are removed from the training data. 
+
+To be able to test the prediction model, the training data is split again into the actual training data for the model and cross validation data. 
+
+```{r, subsetData}
+library(caret)
+
+set.seed(1234)
+
+train <- trainData[ , -c(1:7)]
+
+trainNA <- train[ , colSums(is.na(train)) == 0 ]
+notFac <- sapply(trainNA, is.factor)
+trainFac <- trainNA[, c(names(trainNA)[!notFac], "classe")]
+
+cv <- createDataPartition( y = trainFac$classe, p = 0.75, list= FALSE)
+cvSet<- trainFac[-cv, ]
+trainSet <- trainFac[cv,]
+```
+
+As there is no performance target and the goal is to do multivariable classification, I will use random forests as a prediction model to get good accuracy. 
+
+```{r train, cache= TRUE}
+fit <- train( classe ~ . , data = train, method = "rf")
+
+fit
+```
+
+Based on the trained model, varImp will give the variables that most contributed to the model and are therefore the most important. 
+
+```{r varImp}
+varImp(fit)
+```
+ 
+The data is subsetted to just the .. most important variables which contributed to the random forest model fit. Then the model is refitted using the reduced training data.
+
+```{r subImp}
+finalTrain <- trainSet[, c()]
+
+fit <- train( classe ~ . , data = finalTrain, method = "rf")var
+
+fit$finalModel
+```
+
+To ensure that the fitted model is not overfitting and predicting correctly, the cross validation dataset is used. Based on the given mesurements, the model is used to predict the classe. Finally, the predicted classes are compared with the actual classe. 
+```{r predict}
+result <- predict( fit, newdata = cvSet)
+
+confusionMatrix(result, cvSet$classe)
+```
+
+The out of sample error is expected to be higher than in the in sample error. 
