@@ -58,7 +58,6 @@ fit <- train( classe ~ . , data = train, method = "rf")
 fit
 ```
 
------------------------------------------------
 The Confusion matrix looks like this:
 
 Confusion matrix:
@@ -70,7 +69,6 @@ D    0    0   28 2381    3 0.0128524046
 E    0    0    4    5 2697 0.0033259424
 
 With an accuracy of 0.989. 
----------------------------------------------------
 
 To ensure that the fitted model is not overfitting and predicting correctly, the cross validation dataset is used. Based on the given mesurements, the model is used to predict the classe. Finally, the predicted classes are compared with the actual classe. 
 ```{r predict}
@@ -82,7 +80,8 @@ confusionMatrix(result, cvSet$classe)
 The out of sample error is expected to be higher than in the in sample error. 
 
 In the case of the cross validation dataset the confusion matrix looks as follows:
-------------------------------------------------
+
+
 Confusion Matrix and Statistics
 
           Reference
@@ -101,8 +100,7 @@ Overall Statistics
     P-Value [Acc > NIR] : < 2.2e-16      
                                          
                   Kappa : 0.992          
- Mcnemar's Test P-Value : NA             
-------------------------------------------------
+ Mcnemar's Test P-Value : NA  
 
 Interestingly enough, the reported accuracy here is higher than the that of the traing data and therefore the error must be smaller. 
 
