@@ -58,21 +58,19 @@ fit <- train( classe ~ . , data = train, method = "rf")
 fit
 ```
 
-Based on the trained model, varImp will give the variables that most contributed to the model and are therefore the most important. 
+-----------------------------------------------
+The Confusion matrix looks like this:
 
-```{r varImp}
-varImp(fit)
-```
- 
-The data is subsetted to just the .. most important variables which contributed to the random forest model fit. Then the model is refitted using the reduced training data.
+Confusion matrix:
+     A    B    C    D    E  class.error
+A 4181    3    0    0    1 0.0009557945
+B   16 2827    4    1    0 0.0073735955
+C    0   14 2542   11    0 0.0097389949
+D    0    0   28 2381    3 0.0128524046
+E    0    0    4    5 2697 0.0033259424
 
-```{r subImp}
-finalTrain <- trainSet[, c()]
-
-fit <- train( classe ~ . , data = finalTrain, method = "rf")var
-
-fit$finalModel
-```
+With an accuracy of 0.989. 
+---------------------------------------------------
 
 To ensure that the fitted model is not overfitting and predicting correctly, the cross validation dataset is used. Based on the given mesurements, the model is used to predict the classe. Finally, the predicted classes are compared with the actual classe. 
 ```{r predict}
@@ -82,3 +80,29 @@ confusionMatrix(result, cvSet$classe)
 ```
 
 The out of sample error is expected to be higher than in the in sample error. 
+
+In the case of the cross validation dataset the confusion matrix looks as follows:
+------------------------------------------------
+Confusion Matrix and Statistics
+
+          Reference
+Prediction    A    B    C    D    E
+         A 1394    5    0    0    0
+         B    1  936    5    0    0
+         C    0    7  847    9    0
+         D    0    0    3  795    0
+         E    0    1    0    0  901
+
+Overall Statistics
+                                         
+               Accuracy : 0.9937         
+                 95% CI : (0.991, 0.9957)
+    No Information Rate : 0.2845         
+    P-Value [Acc > NIR] : < 2.2e-16      
+                                         
+                  Kappa : 0.992          
+ Mcnemar's Test P-Value : NA             
+------------------------------------------------
+
+Interestingly enough, the reported accuracy here is higher than the that of the traing data and therefore the error must be smaller. 
+
