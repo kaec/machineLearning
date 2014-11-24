@@ -61,7 +61,7 @@ fit
 The Confusion matrix looks like this:
 
 Confusion matrix:
-     A    B    C    D    E  class.error
+    A     B    C    D    E  class.error
 A 4181    3    0    0    1 0.0009557945
 B   16 2827    4    1    0 0.0073735955
 C    0   14 2542   11    0 0.0097389949
